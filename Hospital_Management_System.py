@@ -1,6 +1,7 @@
 # Hospital Management System
 
 from datetime import datetime,timedelta,time
+from collections import defaultdict
 import json
 
 specialist_ailments: dict[str, list[str]] = {
@@ -58,7 +59,7 @@ class Doctor:
         self.name : str= name
         self.specialisation : str = specialisation
         self.appointments_schedule :dict[Patient,datetime] = {}
-        self._patienttrackrecord : dict[Patient,list[datetime]] = {}
+        self._patienttrackrecord : dict[Patient,list[datetime]] = defaultdict(list)
     
     def __eq__(self, other):
         return isinstance(other, Doctor) and self.name == other.name and self.specialisation == other.specialisation
@@ -95,7 +96,7 @@ class Patient:
     def __init__(self,name:str):
         self.name : str = name
         self.appointment : dict[Doctor,datetime] = {}
-        self._appointmentrecord : dict[Doctor,list[datetime]]= {}
+        self._appointmentrecord : dict[Doctor,list[datetime]]= defaultdict(list)
 
     def __eq__(self, other):
         return isinstance(other, Patient) and self.name == other.name
@@ -120,10 +121,10 @@ class Appointment:
     def book_appointment(patient_account:Patient,doctor_account : Doctor,app_date : datetime) -> str:
 
         patient_account.appointment[doctor_account] = app_date
-        patient_account._appointmentrecord.setdefault(doctor_account,[]).append(app_date)
+        patient_account._appointmentrecord[doctor_account].append(app_date)
         
         doctor_account.appointments_schedule[patient_account] = app_date
-        doctor_account._patienttrackrecord.setdefault(patient_account,[]).append(app_date)
+        doctor_account._patienttrackrecord[patient_account].append(app_date)
         
         return f"\nAppointment booked to Dr.{doctor_account.name} on {app_date.date()} at {app_date.time()}."
         
